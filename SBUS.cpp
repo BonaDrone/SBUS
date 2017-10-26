@@ -22,9 +22,9 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-// Teensy 3.0 || Teensy 3.1/3.2 || Teensy 3.5 || Teensy 3.6 || Teensy LC 
+// Teensy 3.0 || Teensy 3.1/3.2 || Teensy 3.5 || Teensy 3.6 || Teensy LC  || STM32L4
 #if defined(__MK20DX128__) || defined(__MK20DX256__) || defined(__MK64FX512__) || \
-	defined(__MK66FX1M0__) || defined(__MKL26Z64__)
+	defined(__MK66FX1M0__) || defined(__MKL26Z64__) || defined(__arm__)
 
 #include "Arduino.h"
 #include "SBUS.h"
@@ -57,7 +57,12 @@ void SBUS::begin(){
 		// begin the serial port for SBUS
 		_bus->begin(100000,SERIAL_8E2_RXINV_TXINV);
 	#endif
-}
+
+	#if defined(__arm__)  // STM32L4
+		// begin the serial port for SBUS
+		_bus->begin(100000,SERIAL_8E2_RXINV_TXINV);
+    #endif
+	}
 
 /* read the SBUS data and calibrate it to +/- 1 */
 bool SBUS::readCal(float* calChannels, uint8_t* failsafe, uint16_t* lostFrames){
@@ -130,7 +135,13 @@ bool SBUS::read(uint16_t* channels, uint8_t* failsafe, uint16_t* lostFrames){
 
 /* parse the SBUS data */
 bool SBUS::parse(){
-    static elapsedMicros sbusTime = 0;
+
+    // A workaround to emulate Teensy's elapsedTime support
+    static uint32_t startTime;
+    static uint32_t sbusTime;
+    uint32_t currTime = micros();
+    sbusTime = currTime - startTime;
+    startTime = currTime;
 
     if(sbusTime > SBUS_TIMEOUT){_fpos = 0;}
 

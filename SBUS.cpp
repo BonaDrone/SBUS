@@ -60,7 +60,7 @@ void SBUS::begin(){
 
 	#if defined(__arm__)  // STM32L4
 		// begin the serial port for SBUS
-		_bus->begin(100000,SERIAL_8E2_RXINV_TXINV);
+		_bus->begin(100000,SERIAL_SBUS);
     #endif
 	}
 

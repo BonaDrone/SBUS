@@ -32,8 +32,8 @@
 // serial port 1
 SBUS x8r(Serial1);
 
-void setup() {
-
+void setup() 
+{
     // begin the SBUS communication
     x8r.begin();
 
@@ -41,8 +41,15 @@ void setup() {
     Serial.begin(115200);
 }
 
-void loop() {
+static void showaxis(const char * label, float axval)
+{
+    char tmp[100];
+    sprintf(tmp, "%s: %+2.2f  ", label, axval);
+    Serial.print(tmp);
+}
 
+void loop() 
+{
     uint8_t failSafe;
     uint16_t lostFrames = 0;
     float channels[16];
@@ -50,14 +57,16 @@ void loop() {
     // look for a good SBUS packet from the receiver
     if(x8r.readCal(&channels[0], &failSafe, &lostFrames)){
 
-        // First four channels (Throttle, Aieleron, Elevator, Rudder) are enough to see whether it's working
-        Serial.print(channels[0]);
-        Serial.print(" ");
-        Serial.print(channels[1]);
-        Serial.print(" ");
-        Serial.print(channels[2]);
-        Serial.print(" ");
-        Serial.println(channels[3]);
-    }
+        // First five channels (Throttle, Aieleron, Elevator, Rudder, Auxiliary) are enough to see whether it's working
+        showaxis("Thr", channels[0]);
+        showaxis("Ael", channels[1]);
+        showaxis("Ele", channels[2]);
+        showaxis("Rud", channels[3]);
+        showaxis("Aux", channels[4]);
+        Serial.print("    Failsafe: ");
+        Serial.print(failSafe);
+        Serial.print("    Lost frames: ");
+        Serial.println(lostFrames);
+     }
 }
 

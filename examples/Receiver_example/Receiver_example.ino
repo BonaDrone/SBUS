@@ -58,11 +58,12 @@ void loop()
     if(x8r.readCal(&channels[0], &failSafe, &lostFrames)){
 
         // First five channels (Throttle, Aieleron, Elevator, Rudder, Auxiliary) are enough to see whether it's working
-        showaxis("Thr", channels[0]);
-        showaxis("Ael", channels[1]);
-        showaxis("Ele", channels[2]);
-        showaxis("Rud", channels[3]);
-        showaxis("Aux", channels[4]);
+        showaxis("Thr",  channels[0]);
+        showaxis("Ael",  channels[1]);
+        showaxis("Ele",  channels[2]);
+        showaxis("Rud",  channels[3]);
+        showaxis("Aux1", channels[4]);
+        showaxis("Aux2", channels[5]);
         Serial.print("    Failsafe: ");
         Serial.print(failSafe);
         Serial.print("    Lost frames: ");
